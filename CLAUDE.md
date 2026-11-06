@@ -31,6 +31,7 @@ Decided rules:
 - Tasks are listed in insertion order; numbers are list positions, so they renumber after `remove`.
 - Data lives in `todo.json` next to `todo.py`; override with the `TODO_FILE` env var (tests use this).
 - Red is only emitted when stdout is a TTY.
+- `list --pending` shows only unfinished tasks but keeps their original numbers, so `done`/`remove` still match.
 
 ## Conventions
 

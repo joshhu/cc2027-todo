@@ -83,6 +83,22 @@ class TestFormatList(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(todo.format_list([], TODAY), "目前沒有待辦事項")
 
+    def test_pending_keeps_original_numbers(self):
+        lines = todo.format_list(self.tasks, TODAY, pending=True).splitlines()
+        self.assertEqual(
+            lines,
+            [
+                "  1. [ ] 買牛奶    到期 11/06",
+                "  3. [ ] 寫第二章  到期 11/01",
+                "  4. [ ] call mom",
+            ],
+        )
+
+    def test_pending_all_done(self):
+        tasks = [task("a", True), task("b", True)]
+        self.assertEqual(todo.format_list(tasks, TODAY, pending=True), "沒有未完成的事項")
+        self.assertEqual(todo.format_list([], TODAY, pending=True), "目前沒有待辦事項")
+
 
 class TestOperations(unittest.TestCase):
     def setUp(self):
@@ -151,6 +167,20 @@ class TestMain(unittest.TestCase):
             out.splitlines(),
             ["  1. [x] 繳電話費  到期 11/05", "  2. [ ] 寫第二章"],
         )
+
+    def test_list_pending(self):
+        self.run_cmd("add", "買牛奶", "11/06")
+        self.run_cmd("add", "繳電話費", "11/05")
+        self.run_cmd("add", "寫第二章")
+        self.run_cmd("done", "1")
+        code, out, _ = self.run_cmd("list", "--pending")
+        self.assertEqual(code, 0)
+        self.assertEqual(
+            out.splitlines(),
+            ["  2. [ ] 繳電話費  到期 11/05", "  3. [ ] 寫第二章"],
+        )
+        # 用 --pending 看到的編號可直接拿來 done
+        self.assertEqual(self.run_cmd("done", "3")[1], "已完成：寫第二章\n")
 
     def test_errors(self):
         code, out, err = self.run_cmd("add", "x", "13/40")

@@ -52,13 +52,17 @@ def pad(s, width):
     return s + " " * (width - display_width(s))
 
 
-def format_list(tasks, today, color=False):
+def format_list(tasks, today, color=False, pending=False):
     if not tasks:
         return "目前沒有待辦事項"
-    num_width = len(str(len(tasks)))
-    name_width = max(display_width(t["name"]) for t in tasks) + 2
+    # 保留原本的編號，讓 done/remove 用的號碼與完整清單一致
+    shown = [(i, t) for i, t in enumerate(tasks, 1) if not (pending and t["done"])]
+    if not shown:
+        return "沒有未完成的事項"
+    num_width = len(str(shown[-1][0]))
+    name_width = max(display_width(t["name"]) for _, t in shown) + 2
     lines = []
-    for i, t in enumerate(tasks, 1):
+    for i, t in shown:
         mark = "x" if t["done"] else " "
         line = f"  {i:>{num_width}}. [{mark}] "
         if t.get("due"):
@@ -100,7 +104,8 @@ def build_parser():
     p = sub.add_parser("add", help="新增待辦事項")
     p.add_argument("name", help="事項名稱")
     p.add_argument("due", nargs="?", help="到期日 MM/DD（可省略）")
-    sub.add_parser("list", help="列出待辦事項")
+    p = sub.add_parser("list", help="列出待辦事項")
+    p.add_argument("--pending", action="store_true", help="只列出未完成的事項")
     p = sub.add_parser("done", help="標記為完成")
     p.add_argument("number", type=int, help="list 顯示的編號")
     p = sub.add_parser("remove", help="刪除待辦事項")
@@ -119,7 +124,9 @@ def main(argv=None, today=None):
             task = add(tasks, args.name, due)
             print(f"已新增：{task['name']}")
         elif args.command == "list":
-            print(format_list(tasks, today, color=sys.stdout.isatty()))
+            print(format_list(
+                tasks, today, color=sys.stdout.isatty(), pending=args.pending
+            ))
             return 0
         elif args.command == "done":
             print(f"已完成：{done(tasks, args.number)['name']}")
