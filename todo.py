@@ -94,6 +94,12 @@ def remove(tasks, number):
     return tasks.pop(_index(tasks, number))
 
 
+def clear(tasks):
+    before = len(tasks)
+    tasks[:] = [t for t in tasks if not t["done"]]
+    return before - len(tasks)
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="todo.py", description="命令列待辦清單")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -105,6 +111,7 @@ def build_parser():
     p.add_argument("number", type=int, help="list 顯示的編號")
     p = sub.add_parser("remove", help="刪除待辦事項")
     p.add_argument("number", type=int, help="list 顯示的編號")
+    sub.add_parser("clear", help="刪除所有已完成的事項")
     return parser
 
 
@@ -125,6 +132,12 @@ def main(argv=None, today=None):
             print(f"已完成：{done(tasks, args.number)['name']}")
         elif args.command == "remove":
             print(f"已刪除：{remove(tasks, args.number)['name']}")
+        elif args.command == "clear":
+            count = clear(tasks)
+            if not count:
+                print("沒有已完成的事項")
+                return 0
+            print(f"已清除 {count} 項已完成事項，剩下 {len(tasks)} 項")
     except ValueError as e:
         print(f"錯誤：{e}", file=sys.stderr)
         return 1
