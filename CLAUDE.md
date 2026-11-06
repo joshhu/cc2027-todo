@@ -8,7 +8,7 @@ Early stage. `hello.py` is a standalone script that prints today's date with the
 
 ## Todo CLI (`todo.py`)
 
-The goal is a command-line to-do list, run as `python3 todo.py <command>`, with four commands: `add`, `done`, `list`, `remove`.
+The goal is a command-line to-do list, run as `python3 todo.py <command>`, with five commands: `add`, `done`, `list`, `remove`, `clear` (deletes all completed tasks).
 
 Target `list` output (from the user's sketch):
 

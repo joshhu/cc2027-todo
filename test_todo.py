@@ -114,6 +114,13 @@ class TestOperations(unittest.TestCase):
         todo.done(tasks, 2)
         self.assertTrue(tasks[1]["done"])
 
+    def test_clear(self):
+        tasks = [task("a", True), task("b"), task("c", True), task("d")]
+        self.assertEqual(todo.clear(tasks), 2)
+        self.assertEqual([t["name"] for t in tasks], ["b", "d"])
+        self.assertEqual(todo.clear(tasks), 0)
+        self.assertEqual([t["name"] for t in tasks], ["b", "d"])
+
     def test_out_of_range(self):
         tasks = [task("a")]
         for n in [0, 2, -1]:
@@ -151,6 +158,17 @@ class TestMain(unittest.TestCase):
             out.splitlines(),
             ["  1. [x] 繳電話費  到期 11/05", "  2. [ ] 寫第二章"],
         )
+
+    def test_clear(self):
+        self.assertEqual(self.run_cmd("clear")[:2], (0, "沒有已完成的事項\n"))
+        self.assertFalse(self.path.exists())
+        for name in ["買牛奶", "繳電話費", "寫第二章"]:
+            self.run_cmd("add", name)
+        self.run_cmd("done", "1")
+        self.run_cmd("done", "3")
+        self.assertEqual(self.run_cmd("clear")[:2], (0, "已清除 2 項已完成事項\n"))
+        self.assertEqual(self.run_cmd("list")[1], "  1. [ ] 繳電話費\n")
+        self.assertEqual(self.run_cmd("clear")[1], "沒有已完成的事項\n")
 
     def test_errors(self):
         code, out, err = self.run_cmd("add", "x", "13/40")

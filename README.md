@@ -9,7 +9,10 @@ python3 todo.py add 買牛奶 11/06
 python3 todo.py list
 python3 todo.py done 1
 python3 todo.py remove 1
+python3 todo.py clear
 ```
+
+`clear` 會刪除所有已完成（`[x]`）的事項，剩下的事項會重新編號。
 
 資料存在 `todo.py` 旁邊的 `todo.json`，可以用環境變數 `TODO_FILE` 改位置。
 
