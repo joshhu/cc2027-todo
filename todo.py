@@ -137,7 +137,7 @@ def main(argv=None, today=None):
             if not count:
                 print("沒有已完成的事項")
                 return 0
-            print(f"已清除 {count} 項已完成事項")
+            print(f"已清除 {count} 項已完成事項，剩下 {len(tasks)} 項")
     except ValueError as e:
         print(f"錯誤：{e}", file=sys.stderr)
         return 1

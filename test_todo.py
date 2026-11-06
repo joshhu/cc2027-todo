@@ -166,7 +166,7 @@ class TestMain(unittest.TestCase):
             self.run_cmd("add", name)
         self.run_cmd("done", "1")
         self.run_cmd("done", "3")
-        self.assertEqual(self.run_cmd("clear")[:2], (0, "已清除 2 項已完成事項\n"))
+        self.assertEqual(self.run_cmd("clear")[:2], (0, "已清除 2 項已完成事項，剩下 1 項\n"))
         self.assertEqual(self.run_cmd("list")[1], "  1. [ ] 繳電話費\n")
         self.assertEqual(self.run_cmd("clear")[1], "沒有已完成的事項\n")
 
